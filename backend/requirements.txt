@@ -1,0 +1,1 @@
+npm install express mongoose redis ioredis jsonwebtoken bcryptjs cors helmet morgan joi dotenv nodemailer multer cloudinary multer-storage-cloudinary socket.io

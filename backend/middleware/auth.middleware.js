@@ -4,7 +4,7 @@ const { createError } = require('./error.middleware');
 
 const protect = async (req, res, next) => {
     try{
-        let token,
+        let token;
 
         if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
             token = req.headers.authorization.split(' ')[1];
@@ -13,7 +13,7 @@ const protect = async (req, res, next) => {
             return next(createError('Not authorized, no token', 401));
         }
 
-        const decode = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = await User.findById(decoded.userId).select('-password -resetPasswordToken -resetPasswordExpiry');
 
         if(!req.user){

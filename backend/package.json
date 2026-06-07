@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "npx nodemon server.js",
-    "test": "npx jest --forceExit"
+    "test": "npx jest --forceExit --runInBand"
   },
   "keywords": [],
   "author": "",

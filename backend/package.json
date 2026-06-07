@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "npx nodemon server.js",
-    "test": "jest --testEnvironment node --forceExit"
+    "test": "npx jest --forceExit"
   },
   "keywords": [],
   "author": "",
@@ -33,5 +33,8 @@
   "jest": {
     "testEnvironment": "node",
     "forceExit": true
+  },
+  "devDependencies": {
+    "supertest": "^7.2.2"
   }
 }

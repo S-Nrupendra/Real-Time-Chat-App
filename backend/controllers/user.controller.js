@@ -23,20 +23,40 @@ const getProfile = async (req, res, next) => {
 // @access  Private
 const updateProfile = async (req, res, next) => {
   try {
-    const { name } = req.body;
     const updateFields = {};
 
-    if (name) updateFields.name = name;
+    if (req.body && req.body.name) {
+      updateFields.name = req.body.name;
+    }
 
-    // Handle avatar upload
+    // Handle avatar upload via buffer
     if (req.file) {
-      // Delete old avatar from cloudinary if exists
+      // Delete old avatar if exists
       if (req.user.avatar) {
         const publicId = req.user.avatar.split('/').pop().split('.')[0];
         await cloudinary.uploader.destroy(`chat-app/avatars/${publicId}`);
       }
 
-      updateFields.avatar = req.file.path;
+      // Upload buffer to Cloudinary
+      const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: 'chat-app/avatars',
+            transformation: [{ width: 200, height: 200, crop: 'fill' }]
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+
+      updateFields.avatar = result.secure_url;
+    }
+
+    if (Object.keys(updateFields).length === 0) {
+      return next(createError('Nothing to update', 400));
     }
 
     const user = await User.findByIdAndUpdate(

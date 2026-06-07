@@ -4,8 +4,8 @@ const { getProfile, updateProfile, getOnlineUsers } = require('../controllers/us
 const { protect } = require('../middleware/auth.middleware');
 const upload = require('../middleware/upload.middleware');
 
+router.get('/online', protect, getOnlineUsers);
 router.get('/profile', protect, getProfile);
 router.put('/profile', protect, upload.single('avatar'), updateProfile);
-router.get('/online', protect, getOnlineUsers);
 
 module.exports = router;

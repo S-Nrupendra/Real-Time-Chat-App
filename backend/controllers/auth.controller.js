@@ -121,7 +121,7 @@ const forgotPassword = async (req, res, next) => {
     await user.save({ validateBeforeSave: false });
 
     // Send plain token in email
-    const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+    const resetUrl = `${process.env.CLIENT_URL}/reset-password/${encodeURIComponent(resetToken)}`;
 
     const html = `
       <h2>Password Reset Request</h2>
@@ -159,7 +159,7 @@ const forgotPassword = async (req, res, next) => {
 // @access  Public
 const resetPassword = async (req, res, next) => {
   try {
-    const { token } = req.params;
+    const token = decodeURIComponent(req.params.token);
     const { password } = req.body;
 
     // Hash the token from URL to compare with DB

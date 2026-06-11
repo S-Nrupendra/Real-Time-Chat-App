@@ -1,31 +1,41 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import api from "../utils/api";
-import Navbar from "../components/Navbar";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useSocket } from '../context/SocketContext';
+import api from '../utils/api';
+import Navbar from '../components/Navbar';
 
 export default function Profile() {
   const { user, login, token } = useAuth();
+  const { setOnlineUsers } = useSocket();
   const navigate = useNavigate();
 
-  const [name, setName] = useState(user?.name || "");
+  const [name, setName] = useState(user?.name || '');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
-    setSuccess("");
+    setError('');
+    setSuccess('');
 
     try {
-      const res = await api.put("/api/users/profile", { name });
+      const res = await api.put('/api/users/profile', { name });
       login(res.data.user, token);
       setName(res.data.user.name);
-      setSuccess("Profile updated successfully");
+
+      // Update this user's entry in online users sidebar
+      setOnlineUsers(prev => prev.map(u =>
+        u.userId === res.data.user.id
+          ? { ...u, name: res.data.user.name, avatar: res.data.user.avatar }
+          : u
+      ));
+
+      setSuccess('Profile updated successfully');
     } catch (err) {
-      setError(err.response?.data?.message || "Update failed");
+      setError(err.response?.data?.message || 'Update failed');
     } finally {
       setLoading(false);
     }
